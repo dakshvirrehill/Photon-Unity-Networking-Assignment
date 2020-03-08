@@ -200,7 +200,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 6712854810096611580}
-        m_MethodName: SelectRoom
+        m_MethodName: SelectUnselectRoom
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -264,7 +264,7 @@ MonoBehaviour:
   mSelectedImage: {fileID: 6712854811129689899}
   mSelected: 0
   mRoomName: {fileID: 6712854809865891180}
-  mLobbyUI: {fileID: 0}
+  mRoomBtn: {fileID: 6712854809865891183}
 --- !u!1 &6712854811129689899
 GameObject:
   m_ObjectHideFlags: 0

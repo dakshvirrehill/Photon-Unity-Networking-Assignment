@@ -16,19 +16,19 @@ public class MainMenu : Menu
         mConnectButtonText.text = "Connect";
     }
 
-    protected override void OnVisible()
-    {
-        GameManager.Instance.mNetworkCallbacks.mConnectedToMaster.AddListener(OnConnectedToMaster);
-    }
+    //protected override void OnVisible()
+    //{
+    //    GameManager.Instance.mNetworkCallbacks.mConnectedToMaster.AddListener(OnConnectedToMaster);
+    //}
 
-    void OnDisable()
-    {
-        if(!GameManager.IsValidSingleton())
-        {
-            return;
-        }
-        GameManager.Instance.mNetworkCallbacks.mConnectedToMaster.RemoveListener(OnConnectedToMaster);
-    }
+    //void OnDisable()
+    //{
+    //    if(!GameManager.IsValidSingleton())
+    //    {
+    //        return;
+    //    }
+    //    GameManager.Instance.mNetworkCallbacks.mConnectedToMaster.RemoveListener(OnConnectedToMaster);
+    //}
 
     public void OnValueChanged(string pInputFieldText)
     {
@@ -45,12 +45,7 @@ public class MainMenu : Menu
         mConnectButton.interactable = false;
         GameManager.Instance.ConnectToMaster();
         mConnectButtonText.text = "Connecting";
-    }
-
-    void OnConnectedToMaster()
-    {
-        mConnectButtonText.text = "Connected";
-        MenuManager.Instance.ShowMenu(GameManager.Instance.mLobby);
+        MenuManager.Instance.ShowMenu(GameManager.Instance.mNetworkwaitMenu);
         MenuManager.Instance.HideMenu(GameManager.Instance.mMainMenu);
     }
 

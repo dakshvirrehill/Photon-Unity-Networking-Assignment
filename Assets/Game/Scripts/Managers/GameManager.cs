@@ -8,15 +8,17 @@ public class GameManager : Singleton<GameManager>
 {
     [HideInInspector] public bool mConnected = false;
     [HideInInspector] public bool mConnecting = false;
-
+    [HideInInspector] public bool mJoiningOrCreatingRoom = false;
+    [HideInInspector] public bool mJoinedRoom = false;
     public NetworkCallbackHandler mNetworkCallbacks;
-
+    readonly TypedLobby mGameLobby = new TypedLobby("NinjaBrawl", LobbyType.Default);
 
     #region Menu Classifiers
     [Header("Menu Classifiers")]
     public MenuClassifier mMainMenu;
     public MenuClassifier mLobby;
     public MenuClassifier mHUD;
+    public MenuClassifier mNetworkwaitMenu;
     #endregion
 
     #region Scene References
@@ -43,7 +45,7 @@ public class GameManager : Singleton<GameManager>
     {
         mConnecting = false;
         mConnected = true;
-        PhotonNetwork.JoinLobby(new TypedLobby("NinjaBrawl", LobbyType.Default));
+        PhotonNetwork.JoinLobby(mGameLobby);
     }
 
 
@@ -52,6 +54,29 @@ public class GameManager : Singleton<GameManager>
         mConnecting = true;
         mConnected = false;
         PhotonNetwork.ConnectUsingSettings();
+    }
+
+    public void JoinRoom(string pRoomName)
+    {
+        mJoiningOrCreatingRoom = true;
+        mJoinedRoom = false;
+        PhotonNetwork.JoinRoom(pRoomName);
+    }
+
+    public void CreateRoom(string pRoomName)
+    {
+        mJoiningOrCreatingRoom = true;
+        mJoinedRoom = false;
+        RoomOptions aRoomOptions = new RoomOptions();
+        aRoomOptions.MaxPlayers = 2;
+        aRoomOptions.IsOpen = aRoomOptions.IsVisible = true;
+        PhotonNetwork.CreateRoom(pRoomName, aRoomOptions, mGameLobby);
+    }
+
+
+    public void StartGame()
+    {
+
     }
 
 
