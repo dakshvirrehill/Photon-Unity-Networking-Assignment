@@ -10,7 +10,7 @@ public class Movement : MonoBehaviour
     [SerializeField] float mSpeed = 10;
     #region Animator Parameters
     [Header("AnimatorParameters")]
-    [SerializeField] string mHorizontalParam;
+    public string mHorizontalParam;
     [SerializeField] string mAttackParam;
     [SerializeField] string mHurtParam;
     [SerializeField] string mDeadParam;
@@ -21,7 +21,7 @@ public class Movement : MonoBehaviour
     }
     void Update()
     {
-        mPlayer.mRenderer.flipX = mPlayer.mRigidbody.velocity.x < 0;
+        mPlayer.mRenderer.flipX = mPlayer.mAnimator.GetFloat(mHorizontalParam) > 0;
         if (!mActive)
         {
             return;
@@ -31,6 +31,7 @@ public class Movement : MonoBehaviour
         if(Input.GetButtonDown("Fire1"))
         {
             mPlayer.mAnimator.SetTrigger(mAttackParam);
+            mPlayer.CreateAttack();
         }
     }
 

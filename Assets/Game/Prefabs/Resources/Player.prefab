@@ -163,7 +163,6 @@ MonoBehaviour:
   mAnimator: {fileID: 5026490985960801412}
   mHealth: 10
   mHitDamage: 1
-  mAttacking: 0
   mAttackTimer: 0.2
 --- !u!114 &817619537240351310
 MonoBehaviour:

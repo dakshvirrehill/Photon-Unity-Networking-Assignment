@@ -10,6 +10,7 @@ public class NetworkCallbackHandler : MonoBehaviourPunCallbacks
     public readonly UnityEvent mConnectedToMaster = new UnityEvent();
     public readonly RoomListEvent mRoomListUpdate = new RoomListEvent();
     public readonly UnityEvent mJoinedRoom = new UnityEvent();
+    public readonly UnityEvent mLeftRoom = new UnityEvent();
     public readonly JoinRoomFailedEvent mJoinRoomFailed = new JoinRoomFailedEvent();
     public readonly JoinRoomFailedEvent mCreateRoomFailed = new JoinRoomFailedEvent();
 
@@ -31,6 +32,11 @@ public class NetworkCallbackHandler : MonoBehaviourPunCallbacks
     public override void OnJoinedRoom()
     {
         mJoinedRoom.Invoke();
+    }
+
+    public override void OnLeftRoom()
+    {
+        mLeftRoom.Invoke();
     }
 
     public override void OnJoinRoomFailed(short returnCode, string message)

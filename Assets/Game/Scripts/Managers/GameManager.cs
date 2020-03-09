@@ -19,6 +19,7 @@ public class GameManager : Singleton<GameManager>
     public MenuClassifier mLobby;
     public MenuClassifier mHUD;
     public MenuClassifier mNetworkwaitMenu;
+    public MenuClassifier mGameOverMenu;
     #endregion
 
     #region Scene References
@@ -49,7 +50,6 @@ public class GameManager : Singleton<GameManager>
         PhotonNetwork.JoinLobby(mGameLobby);
     }
 
-
     public void ConnectToMaster()
     {
         mConnecting = true;
@@ -77,7 +77,19 @@ public class GameManager : Singleton<GameManager>
 
     public void StartGame()
     {
+        mJoiningOrCreatingRoom = false;
+        mJoinedRoom = true;
         MultiSceneManager.Instance.LoadScene(mGameScene);
+    }
+
+    public void EndGame()
+    {
+        mJoinedRoom = false;
+        PhotonNetwork.LeaveRoom();
+        MultiSceneManager.Instance.UnloadScene(mGameScene);
+        MenuManager.Instance.HideMenu(mHUD);
+        MenuManager.Instance.HideMenu(mGameOverMenu);
+        MenuManager.Instance.ShowMenu(mNetworkwaitMenu);
     }
 
 

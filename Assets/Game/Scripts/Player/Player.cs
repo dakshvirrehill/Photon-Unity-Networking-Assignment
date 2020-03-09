@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Photon.Pun;
-using Photon.Realtime;
-using ExitGames.Client.Photon;
 
 public class Player : MonoBehaviourPun, IPunObservable
 {
@@ -14,20 +12,37 @@ public class Player : MonoBehaviourPun, IPunObservable
 
     public float mHealth = 10;
     public float mHitDamage = 1;
-    [HideInInspector]public bool mAttacking = false;
-
+    bool mAttacking = false;
+    bool mAttacked = false;
     public float mAttackTimer = 0.2f;
     float mCurAttackTimer = 0.0f;
-
+    HUD mCurrHUD = null;
     void Start()
     {
-        if(PhotonNetwork.IsMasterClient)
+        mCurrHUD = MenuManager.Instance.GetMenu<HUD>(GameManager.Instance.mHUD);
+        if (PhotonNetwork.IsMasterClient)
         {
             mRenderer.color = photonView.IsMine ? Color.yellow : Color.green;
+            if(photonView.IsMine)
+            {
+                mCurrHUD.PlayerOneInit(photonView.Owner.NickName);
+            }
+            else
+            {
+                mCurrHUD.PlayerTwoInit(photonView.Owner.NickName);
+            }
         }
         else
         {
             mRenderer.color = photonView.IsMine ? Color.green : Color.yellow;
+            if (photonView.IsMine)
+            {
+                mCurrHUD.PlayerTwoInit(photonView.Owner.NickName);
+            }
+            else
+            {
+                mCurrHUD.PlayerOneInit(photonView.Owner.NickName);
+            }
         }
         mMovement.mActive = photonView.IsMine;
     }
@@ -43,35 +58,101 @@ public class Player : MonoBehaviourPun, IPunObservable
             mCurAttackTimer += Time.deltaTime;
             if(mCurAttackTimer > mAttackTimer)
             {
-                mCurAttackTimer = 0.0f;
+                CreateAttack();
                 mAttacking = false;
             }
         }
+    }
+
+    public void CreateAttack()
+    {
+        mCurAttackTimer = 0.0f;
+        mAttacking = true;
+        mAttacked = false;
     }
 
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
         stream.Serialize(ref mAttacking);
         stream.Serialize(ref mHealth);
+        if(stream.IsReading)
+        {
+            UpdateHealth();
+        }
+    }
+
+    void UpdateHealth()
+    {
+        if(mCurrHUD == null)
+        {
+            mCurrHUD = MenuManager.Instance.GetMenu<HUD>(GameManager.Instance.mHUD);
+        }
+        if (PhotonNetwork.IsMasterClient)
+        {
+            if(photonView.IsMine)
+            {
+                mCurrHUD.UpdatePlayerOneHealth(mHealth / 10.0f);
+            }
+            else
+            {
+                mCurrHUD.UpdatePlayerTwoHealth(mHealth / 10.0f);
+            }
+        }
+        else
+        {
+            if (photonView.IsMine)
+            {
+                mCurrHUD.UpdatePlayerTwoHealth(mHealth / 10.0f);
+            }
+            else
+            {
+                mCurrHUD.UpdatePlayerOneHealth(mHealth / 10.0f);
+            }
+        }
+    }
+
+    void CheckForAttack(Collision2D collision)
+    {
+        if (!photonView.IsMine)
+        {
+            return;
+        }
+        if (!mAttacking || mAttacked)
+        {
+            return;
+        }
+        Player aPlayer = collision.collider.GetComponent<Player>();
+        if (aPlayer != null)
+        {
+            aPlayer.photonView.RPC("CauseDamage", RpcTarget.All,
+                    GameSceneHandler.Instance.mPlayerId);
+            mAttacked = true;
+        }
     }
 
     void OnCollisionEnter2D(Collision2D collision)
     {
-        if(!photonView.IsMine)
-        {
-            return;
-        }
-        if(mAttacking)
-        {
-            photonView.RPC("CauseDamage", RpcTarget.AllViaServer,
-                GameSceneHandler.Instance.mPlayerId);
-        }
+        CheckForAttack(collision);
+    }
+
+    void OnCollisionStay2D(Collision2D collision)
+    {
+        CheckForAttack(collision);
+    }
+
+    void OnCollisionExit2D(Collision2D collision)
+    {
+        CheckForAttack(collision);
     }
 
     [PunRPC]
     public void CauseDamage(int pOpponentId)
     {
-        if(pOpponentId == GameSceneHandler.Instance.mPlayerId)
+        if(!photonView.IsMine)
+        {
+            return;
+        }
+        if (pOpponentId == GameSceneHandler.Instance.mPlayerId)
         {
             return;
         }
@@ -80,16 +161,27 @@ public class Player : MonoBehaviourPun, IPunObservable
             return;
         }
         mHealth -= mHitDamage;
+        UpdateHealth();
         mMovement.HurtPlayer();
         if(mHealth <= 0)
         {
-            PhotonNetwork.RaiseEvent(
-                    GenEvents.GameEnd,
-                    GameSceneHandler.Instance.mPlayerId,
-                    new RaiseEventOptions { Receivers = ReceiverGroup.All },
-                    new SendOptions { Reliability = true });
             mMovement.KillPlayer();
+            photonView.RPC("DisplayGameEnd",
+                PhotonNetwork.CurrentRoom.GetPlayer(pOpponentId), true);
+            DisplayGameEnd(false);
         }
+    }
+
+    [PunRPC]
+    public void DisplayGameEnd(bool pWon)
+    {
+        mMovement.mActive = false;
+        mRigidbody.velocity = Vector2.zero;
+        mAnimator.SetFloat(mMovement.mHorizontalParam, 0);
+        MenuManager.Instance.ShowMenu(GameManager.Instance.mGameOverMenu);
+        GameOverMenu aGameOverMenu = MenuManager.Instance.GetMenu<GameOverMenu>(GameManager.Instance.mGameOverMenu);
+        aGameOverMenu.SetWinLoss(pWon);
+        photonView.Synchronization = ViewSynchronization.Off;
     }
 
 }

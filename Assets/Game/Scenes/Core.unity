@@ -266,7 +266,7 @@ MonoBehaviour:
   m_Follow: {fileID: 0}
   m_Lens:
     FieldOfView: 60
-    OrthographicSize: 16.2
+    OrthographicSize: 32.4
     NearClipPlane: 0.3
     FarClipPlane: 1000
     Dutch: 0
@@ -413,6 +413,7 @@ MonoBehaviour:
   mLobby: {fileID: 11400000, guid: dd7dbc3ab751970419ae8edc9333fc11, type: 2}
   mHUD: {fileID: 11400000, guid: 81c698ae3d81ae74cad94e91ec2be560, type: 2}
   mNetworkwaitMenu: {fileID: 11400000, guid: 565097ac3d145084e9b4a0e2c7defd61, type: 2}
+  mGameOverMenu: {fileID: 0}
   mUIScene:
     sceneAsset: {fileID: 102900000, guid: c2718da20bb9dea43bc67bea6563ee1b, type: 3}
     scenePath: Assets/Game/Scenes/UI.unity
@@ -575,7 +576,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 16.2
+  orthographic size: 32.4
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2

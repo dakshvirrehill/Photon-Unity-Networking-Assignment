@@ -8,7 +8,6 @@ using ExitGames.Client.Photon;
 
 public class GameSceneHandler : Singleton<GameSceneHandler>
 {
-    [SerializeField] CinemachineTargetGroup mTargetGroup;
     [SerializeField] Transform mPlayerOneSpawnPosition;
     [SerializeField] Transform mPlayerTwoSpawnPosition;
     [SerializeField] string mPlayerPrefab = "Player";
@@ -68,10 +67,6 @@ public class GameSceneHandler : Singleton<GameSceneHandler>
         else if(pEventData.Code == GenEvents.StartGame)
         {
             StartGameScene();
-        }
-        else if(pEventData.Code == GenEvents.GameEnd)
-        {
-
         }
     }
 

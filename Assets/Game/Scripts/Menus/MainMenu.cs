@@ -16,20 +16,6 @@ public class MainMenu : Menu
         mConnectButtonText.text = "Connect";
     }
 
-    //protected override void OnVisible()
-    //{
-    //    GameManager.Instance.mNetworkCallbacks.mConnectedToMaster.AddListener(OnConnectedToMaster);
-    //}
-
-    //void OnDisable()
-    //{
-    //    if(!GameManager.IsValidSingleton())
-    //    {
-    //        return;
-    //    }
-    //    GameManager.Instance.mNetworkCallbacks.mConnectedToMaster.RemoveListener(OnConnectedToMaster);
-    //}
-
     public void OnValueChanged(string pInputFieldText)
     {
         mConnectButton.interactable = (!string.IsNullOrEmpty(mNicknameImpField.text)
@@ -43,6 +29,7 @@ public class MainMenu : Menu
             return;
         }
         mConnectButton.interactable = false;
+        Photon.Pun.PhotonNetwork.LocalPlayer.NickName = mNicknameImpField.text;
         GameManager.Instance.ConnectToMaster();
         mConnectButtonText.text = "Connecting";
         MenuManager.Instance.ShowMenu(GameManager.Instance.mNetworkwaitMenu);

@@ -9,6 +9,7 @@ public class NetworkWaitMenu : Menu
         base.Start();
         GameManager.Instance.mNetworkCallbacks.mConnectedToMaster.AddListener(ConnectedToMaster);
         GameManager.Instance.mNetworkCallbacks.mJoinedRoom.AddListener(JoinedRoom);
+        GameManager.Instance.mNetworkCallbacks.mLeftRoom.AddListener(LeftRoom);
     }
 
     void OnDestroy()
@@ -19,6 +20,7 @@ public class NetworkWaitMenu : Menu
         }
         GameManager.Instance.mNetworkCallbacks.mConnectedToMaster.RemoveListener(ConnectedToMaster);
         GameManager.Instance.mNetworkCallbacks.mJoinedRoom.RemoveListener(JoinedRoom);
+        GameManager.Instance.mNetworkCallbacks.mLeftRoom.RemoveListener(LeftRoom);
     }
 
 
@@ -39,6 +41,16 @@ public class NetworkWaitMenu : Menu
             return;
         }
         GameManager.Instance.StartGame();
+        MenuManager.Instance.HideMenu(GameManager.Instance.mNetworkwaitMenu);
+    }
+
+    void LeftRoom()
+    {
+        if(!gameObject.activeInHierarchy)
+        {
+            return;
+        }
+        MenuManager.Instance.ShowMenu(GameManager.Instance.mLobby);
         MenuManager.Instance.HideMenu(GameManager.Instance.mNetworkwaitMenu);
     }
 }

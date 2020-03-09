@@ -51,9 +51,9 @@ public class RoomSelector : MonoBehaviour, IInitable
         if(mLobbyUI.mSelectedRoom != null)
         {
             mLobbyUI.mSelectedRoom.UnSelectRoom();
-            mLobbyUI.mSelectedRoom = this;
-            mLobbyUI.mLobbyNameImpField.SetTextWithoutNotify(mRoomName.text);
         }
+        mLobbyUI.mSelectedRoom = this;
+        mLobbyUI.mLobbyNameImpField.SetTextWithoutNotify(mRoomName.text);
         mRoomBtn.interactable = true;
     }
     public void UnSelectRoom()
