@@ -127,14 +127,15 @@ public class Player : MonoBehaviourPun, IPunObservable
         if (aPlayer != null)
         {
             mInAttack = true;
-            mDodgeDirection = transform.position - aPlayer.transform.position;
+            mDodgeDirection = transform.position - 
+                aPlayer.transform.position;
             if(mDodgeDirection.x < 0)
             {
-                mDodgeDirection.x = -0.5f;
+                mDodgeDirection.x = -1.0f;
             }
             else if(mDodgeDirection.x > 0)
             {
-                mDodgeDirection.x = 0.5f;
+                mDodgeDirection.x = 1.0f;
             }
             if (!mAttacking || mAttacked)
             {
@@ -192,7 +193,8 @@ public class Player : MonoBehaviourPun, IPunObservable
         {
             mMovement.KillPlayer();
             photonView.RPC("DisplayGameEnd",
-                PhotonNetwork.CurrentRoom.GetPlayer(pOpponentId), true);
+                PhotonNetwork.CurrentRoom.GetPlayer(pOpponentId), 
+                true);
             DisplayGameEnd(false);
         }
     }
@@ -206,6 +208,12 @@ public class Player : MonoBehaviourPun, IPunObservable
         MenuManager.Instance.ShowMenu(GameManager.Instance.mGameOverMenu);
         GameOverMenu aGameOverMenu = MenuManager.Instance.GetMenu<GameOverMenu>(GameManager.Instance.mGameOverMenu);
         aGameOverMenu.SetWinLoss(pWon);
+    }
+
+    [PunRPC]
+    public void PlayDodge()
+    {
+        AudioManager.Instance.PlaySFX("DodgeSound");
     }
 
 }

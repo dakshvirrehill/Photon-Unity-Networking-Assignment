@@ -19,6 +19,19 @@ public class HUD : Menu
     [SerializeField] TextMeshProUGUI mTimer;
 
     float mStartTime = 0.0f;
+    bool[] mPlayedSound = new bool[] { false, false, false, false };
+    void OnDisable()
+    {
+        if (!AudioManager.IsValidSingleton())
+        {
+            return;
+        }
+        if (AudioManager.Instance.IsSoundPlaying("GameMusic"))
+        {
+            AudioManager.Instance.FadeSound("GameMusic", 0.2f, true);
+        }
+        mPlayedSound = new bool[] { false,false,false,false};
+    }
 
     public void PlayerOneInit(string pNickname)
     {
@@ -49,6 +62,11 @@ public class HUD : Menu
             if(mStartTime <= 0)
             {
                 mTimer.text = "";
+                if (!AudioManager.Instance.IsSoundPlaying("GameMusic"))
+                {
+                    AudioManager.Instance.PlayMusic("GameMusic", true, 0.1f);
+                    AudioManager.Instance.FadeSound("GameMusic", 0.2f, false, 0.1f);
+                }
             }
         }
     }
@@ -59,10 +77,21 @@ public class HUD : Menu
         {
             mTimer.text = "START!";
             mStartTime = 0.3f;
+            if(!mPlayedSound[pTime])
+            {
+                mPlayedSound[pTime] = true;
+                AudioManager.Instance.PlaySFX("FinalTapSound");
+            }
         }
         else
         {
             mTimer.text = pTime.ToString();
+            if(!mPlayedSound[pTime])
+            {
+                mPlayedSound[pTime] = true;
+                AudioManager.Instance.PlaySFX("TapSound");
+
+            }
         }
     }
 

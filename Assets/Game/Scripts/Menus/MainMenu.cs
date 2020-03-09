@@ -14,6 +14,31 @@ public class MainMenu : Menu
         mConnectButton.interactable = (!string.IsNullOrEmpty(mNicknameImpField.text)
             && !GameManager.Instance.mConnecting);
         mConnectButtonText.text = "Connect";
+        if(!AudioManager.Instance.IsSoundPlaying("MenuMusic"))
+        {
+            AudioManager.Instance.PlayMusic("MenuMusic", true, 0.1f);
+            AudioManager.Instance.FadeSound("MenuMusic", 0.2f, false, 0.1f);
+        }
+    }
+
+    void Update()
+    {
+        if (!AudioManager.Instance.IsSoundPlaying("MenuMusic"))
+        {
+            AudioManager.Instance.PlayMusic("MenuMusic", true, 0.1f);
+            AudioManager.Instance.FadeSound("MenuMusic", 0.2f, false, 0.1f);
+        }
+    }
+    void OnDisable()
+    {
+        if(!AudioManager.IsValidSingleton())
+        {
+            return;
+        }
+        if (AudioManager.Instance.IsSoundPlaying("MenuMusic"))
+        {
+            AudioManager.Instance.FadeSound("MenuMusic", 0.2f, true);
+        }
     }
 
     public void OnValueChanged(string pInputFieldText)

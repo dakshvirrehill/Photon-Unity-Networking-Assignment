@@ -35,8 +35,25 @@ public class LobbyUI : Menu
         OnValueChanged(mLobbyNameImpField.text);
     }
 
+    void OnEnable()
+    {
+        if (!AudioManager.Instance.IsSoundPlaying("MenuMusic"))
+        {
+            AudioManager.Instance.PlayMusic("MenuMusic", true, 0.1f);
+            AudioManager.Instance.FadeSound("MenuMusic", 0.2f, false, 0.1f);
+        }
+    }
+
     void OnDisable()
     {
+        if (!AudioManager.IsValidSingleton())
+        {
+            return;
+        }
+        if (AudioManager.Instance.IsSoundPlaying("MenuMusic"))
+        {
+            AudioManager.Instance.FadeSound("MenuMusic", 0.2f, true);
+        }
         mLobbyNameImpField.SetTextWithoutNotify("");
     }
 
@@ -68,7 +85,12 @@ public class LobbyUI : Menu
         aCurrentRooms = new List<string>(aLobbyRooms.Keys);
         foreach(string aCurrentRoom in aCurrentRooms)
         {
-            if(!mRoomSelectors.ContainsKey(aCurrentRoom))
+            if (aLobbyRooms[aCurrentRoom].RemovedFromList || !aLobbyRooms[aCurrentRoom].IsOpen
+                || !aLobbyRooms[aCurrentRoom].IsVisible)
+            {
+                continue;
+            }
+                if (!mRoomSelectors.ContainsKey(aCurrentRoom))
             {
                 AddNewRoom(aLobbyRooms[aCurrentRoom]);
             }
@@ -78,6 +100,7 @@ public class LobbyUI : Menu
     void RemoveRoom(string pRoomName)
     {
         mRoomSelectors[pRoomName].UnSelectRoom();
+        mRoomListParent.sizeDelta -= new Vector2(0, mRoomSelectors[pRoomName].mSelfTransform.sizeDelta.y + mRoomListLayoutGroup.spacing);
         ObjectPoolingManager.Instance.ReturnPooledObject(mPoolName, mRoomSelectors[pRoomName].gameObject);
         mRoomSelectors[pRoomName].gameObject.SetActive(false);
         mRoomSelectors.Remove(pRoomName);

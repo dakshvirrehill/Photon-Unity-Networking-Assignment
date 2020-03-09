@@ -36,5 +36,6 @@ MonoBehaviour:
   - RespawnSpaceship
   - CauseDamage
   - DisplayGameEnd
+  - PlayDodge
   DisableAutoOpenWizard: 1
   ShowSettings: 1

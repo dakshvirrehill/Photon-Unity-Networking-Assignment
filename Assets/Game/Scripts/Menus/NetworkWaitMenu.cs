@@ -10,6 +10,8 @@ public class NetworkWaitMenu : Menu
         GameManager.Instance.mNetworkCallbacks.mConnectedToMaster.AddListener(ConnectedToMaster);
         GameManager.Instance.mNetworkCallbacks.mJoinedRoom.AddListener(JoinedRoom);
         GameManager.Instance.mNetworkCallbacks.mLeftRoom.AddListener(LeftRoom);
+        GameManager.Instance.mNetworkCallbacks.mJoinRoomFailed.AddListener(JoinedRoomFailed);
+        GameManager.Instance.mNetworkCallbacks.mCreateRoomFailed.AddListener(CreateRoomFailed);
     }
 
     void OnDestroy()
@@ -21,6 +23,8 @@ public class NetworkWaitMenu : Menu
         GameManager.Instance.mNetworkCallbacks.mConnectedToMaster.RemoveListener(ConnectedToMaster);
         GameManager.Instance.mNetworkCallbacks.mJoinedRoom.RemoveListener(JoinedRoom);
         GameManager.Instance.mNetworkCallbacks.mLeftRoom.RemoveListener(LeftRoom);
+        GameManager.Instance.mNetworkCallbacks.mJoinRoomFailed.RemoveListener(JoinedRoomFailed);
+        GameManager.Instance.mNetworkCallbacks.mCreateRoomFailed.RemoveListener(CreateRoomFailed);
     }
 
 
@@ -41,6 +45,32 @@ public class NetworkWaitMenu : Menu
             return;
         }
         GameManager.Instance.StartGame();
+        MenuManager.Instance.HideMenu(GameManager.Instance.mNetworkwaitMenu);
+    }
+
+    void JoinedRoomFailed(short returnCode, string message)
+    {
+        GameManager.Instance.JoinOrCreateFailed();
+        ErrorMessageMenu aMenu = MenuManager.Instance.GetMenu<ErrorMessageMenu>(GameManager.Instance.mErrorMessageMenu);
+        aMenu.SetErrorMessage("Joining Room Failed", message, 1.0f);
+        if (!aMenu.gameObject.activeInHierarchy)
+        {
+            MenuManager.Instance.ShowMenu(GameManager.Instance.mErrorMessageMenu);
+        }
+        MenuManager.Instance.ShowMenu(GameManager.Instance.mLobby);
+        MenuManager.Instance.HideMenu(GameManager.Instance.mNetworkwaitMenu);
+    }
+
+    void CreateRoomFailed(short returnCode, string message)
+    {
+        GameManager.Instance.JoinOrCreateFailed();
+        ErrorMessageMenu aMenu = MenuManager.Instance.GetMenu<ErrorMessageMenu>(GameManager.Instance.mErrorMessageMenu);
+        aMenu.SetErrorMessage("Creating Room Failed", message, 1.0f);
+        if (!aMenu.gameObject.activeInHierarchy)
+        {
+            MenuManager.Instance.ShowMenu(GameManager.Instance.mErrorMessageMenu);
+        }
+        MenuManager.Instance.ShowMenu(GameManager.Instance.mLobby);
         MenuManager.Instance.HideMenu(GameManager.Instance.mNetworkwaitMenu);
     }
 

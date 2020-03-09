@@ -10,6 +10,10 @@ public class GameOverMenu : Menu
 
     public void SetWinLoss(bool pWon)
     {
+        if (AudioManager.Instance.IsSoundPlaying("GameMusic"))
+        {
+            AudioManager.Instance.FadeSound("GameMusic", 0.2f, true);
+        }
         Color aColor;
         if (pWon)
         {
@@ -17,6 +21,8 @@ public class GameOverMenu : Menu
             aColor = Color.green;
             aColor.a = 0.3f;
             mGameOverPanel.color = aColor;
+            AudioManager.Instance.PlayMusic("VictorySound", false, 0.1f);
+            AudioManager.Instance.FadeSound("VictorySound", 0.1f, false, 0.1f);
         }
         else
         {
@@ -24,6 +30,8 @@ public class GameOverMenu : Menu
             aColor = Color.red;
             aColor.a = 0.3f;
             mGameOverPanel.color = aColor;
+            AudioManager.Instance.PlayMusic("LossSound", false, 0.1f);
+            AudioManager.Instance.FadeSound("LossSound", 0.1f, false, 0.1f);
         }
     }
 

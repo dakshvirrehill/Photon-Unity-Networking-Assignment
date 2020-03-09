@@ -28,8 +28,11 @@ public class Movement : MonoBehaviour
             return;
         }
         mHorizontal = Input.GetAxis("Horizontal");
-        mPlayer.mAnimator.SetFloat(mHorizontalParam, mHorizontal);
-        if(Input.GetButtonDown("Fire1"))
+        if(Mathf.Abs(mHorizontal) >= 0.3)
+        {
+            mPlayer.mAnimator.SetFloat(mHorizontalParam, mHorizontal);
+        }
+        if (Input.GetButtonDown("Fire1"))
         {
             mPlayer.mAnimator.SetTrigger(mAttackParam);
             mPlayer.CreateAttack();
@@ -50,9 +53,15 @@ public class Movement : MonoBehaviour
         if (mDodge)
         {
             RaycastHit2D aHit = Physics2D.Raycast(transform.position, mPlayer.mDodgeDirection.normalized, mPlayer.mDodgeDirection.magnitude * mSpeed,LayerMask.GetMask("Wall"));
-            if (aHit.collider == null)
+            Vector2 aFinalPos = new Vector2(transform.position.x, transform.position.y) + mPlayer.mDodgeDirection * mSpeed;
+            if (aHit.collider != null)
             {
-                mPlayer.mRigidbody.MovePosition(new Vector2(transform.position.x, transform.position.y) + mPlayer.mDodgeDirection * mSpeed);
+                aFinalPos = aHit.point - mPlayer.mDodgeDirection * 2.0f;
+            }
+            if (!Physics2D.OverlapPoint(aFinalPos, LayerMask.GetMask("Wall")))
+            {
+                mPlayer.mRigidbody.MovePosition(aFinalPos);
+                mPlayer.photonView.RPC("PlayDodge", Photon.Pun.RpcTarget.All);
             }
         }
     }

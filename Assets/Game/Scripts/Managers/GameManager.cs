@@ -20,6 +20,7 @@ public class GameManager : Singleton<GameManager>
     public MenuClassifier mHUD;
     public MenuClassifier mNetworkwaitMenu;
     public MenuClassifier mGameOverMenu;
+    public MenuClassifier mErrorMessageMenu;
     #endregion
 
     #region Scene References
@@ -80,6 +81,12 @@ public class GameManager : Singleton<GameManager>
         mJoiningOrCreatingRoom = false;
         mJoinedRoom = true;
         MultiSceneManager.Instance.LoadScene(mGameScene);
+    }
+
+    public void JoinOrCreateFailed()
+    {
+        mJoiningOrCreatingRoom = false;
+        mJoinedRoom = false;
     }
 
     public void EndGame()
