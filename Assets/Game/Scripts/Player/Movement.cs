@@ -4,7 +4,7 @@ using UnityEngine;
 [RequireComponent(typeof(Player))]
 public class Movement : MonoBehaviour
 {
-    [HideInInspector] public bool mActive = true;
+    [HideInInspector] public bool mActive = false;
     float mHorizontal = 0.0f;
     Player mPlayer;
     [SerializeField] float mSpeed = 10;
@@ -15,6 +15,7 @@ public class Movement : MonoBehaviour
     [SerializeField] string mHurtParam;
     [SerializeField] string mDeadParam;
     #endregion
+    bool mDodge = false;
     void Start()
     {
         mPlayer = GetComponent<Player>();
@@ -33,6 +34,7 @@ public class Movement : MonoBehaviour
             mPlayer.mAnimator.SetTrigger(mAttackParam);
             mPlayer.CreateAttack();
         }
+        mDodge = Input.GetButtonDown("Jump") && mPlayer.mInAttack;
     }
 
     void FixedUpdate()
@@ -42,9 +44,17 @@ public class Movement : MonoBehaviour
             return;
         }
         mPlayer.mRigidbody.velocity = new Vector2(
-            mHorizontal * mSpeed,
-            mPlayer.mRigidbody.velocity.y
-            );
+                mHorizontal * mSpeed,
+                mPlayer.mRigidbody.velocity.y
+        );
+        if (mDodge)
+        {
+            RaycastHit2D aHit = Physics2D.Raycast(transform.position, mPlayer.mDodgeDirection.normalized, mPlayer.mDodgeDirection.magnitude * mSpeed,LayerMask.GetMask("Wall"));
+            if (aHit.collider == null)
+            {
+                mPlayer.mRigidbody.MovePosition(new Vector2(transform.position.x, transform.position.y) + mPlayer.mDodgeDirection * mSpeed);
+            }
+        }
     }
 
 

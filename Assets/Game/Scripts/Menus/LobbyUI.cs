@@ -30,6 +30,16 @@ public class LobbyUI : Menu
         GameManager.Instance.mNetworkCallbacks.mRoomListUpdate.RemoveListener(OnRoomListUpdate);
     }
 
+    protected override void OnVisible()
+    {
+        OnValueChanged(mLobbyNameImpField.text);
+    }
+
+    void OnDisable()
+    {
+        mLobbyNameImpField.SetTextWithoutNotify("");
+    }
+
 
     void OnRoomListUpdate(List<RoomInfo> pRooms)
     {
@@ -43,12 +53,12 @@ public class LobbyUI : Menu
         {
             if(!aLobbyRooms.ContainsKey(aCurRoom))
             {
-                mRoomSelectors[aCurRoom].UnSelectRoom();
+                RemoveRoom(aCurRoom);
             }
             else if(aLobbyRooms[aCurRoom].RemovedFromList || !aLobbyRooms[aCurRoom].IsOpen
                 || !aLobbyRooms[aCurRoom].IsVisible)
             {
-                mRoomSelectors[aCurRoom].UnSelectRoom();
+                RemoveRoom(aCurRoom);
             }
             else
             {
@@ -63,6 +73,14 @@ public class LobbyUI : Menu
                 AddNewRoom(aLobbyRooms[aCurrentRoom]);
             }
         }
+    }
+
+    void RemoveRoom(string pRoomName)
+    {
+        mRoomSelectors[pRoomName].UnSelectRoom();
+        ObjectPoolingManager.Instance.ReturnPooledObject(mPoolName, mRoomSelectors[pRoomName].gameObject);
+        mRoomSelectors[pRoomName].gameObject.SetActive(false);
+        mRoomSelectors.Remove(pRoomName);
     }
 
     void AddNewRoom(RoomInfo pRoom)
@@ -82,16 +100,27 @@ public class LobbyUI : Menu
         {
             mCreateLobbyBtn.interactable = false;
             mJoinLobbyBtn.interactable = false;
+            if(mSelectedRoom != null)
+            {
+                mSelectedRoom.UnSelectRoom();
+            }
             return;
         }
         if(mRoomSelectors.ContainsKey(mLobbyNameImpField.text))
         {
-            if(!mRoomSelectors[mLobbyNameImpField.text] != mSelectedRoom)
+            if(mSelectedRoom != null)
             {
-                mRoomSelectors[mLobbyNameImpField.text].SelectUnselectRoom();
+                if (mRoomSelectors[mLobbyNameImpField.text].gameObject.GetInstanceID() != mSelectedRoom.gameObject.GetInstanceID())
+                {
+                    mRoomSelectors[mLobbyNameImpField.text].SelectUnselectRoom();
+                }
             }
             mCreateLobbyBtn.interactable = false;
             mJoinLobbyBtn.interactable = true;
+            if(mSelectedRoom == null)
+            {
+                mRoomSelectors[mLobbyNameImpField.text].SelectUnselectRoom();
+            }
             return;
         }
         if(mSelectedRoom != null)

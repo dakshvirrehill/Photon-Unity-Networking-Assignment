@@ -163,7 +163,10 @@ MonoBehaviour:
   mAnimator: {fileID: 5026490985960801412}
   mHealth: 10
   mHitDamage: 1
+  mInAttack: 0
+  mDodgeDirection: {x: 0, y: 0}
   mAttackTimer: 0.2
+  mCurrHUD: {fileID: 0}
 --- !u!114 &817619537240351310
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -176,8 +179,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bbf2c6e144583a646a71f4101a533a18, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mActive: 1
-  mSpeed: 10
+  mActive: 0
+  mSpeed: 20
   mHorizontalParam: Horizontal
   mAttackParam: Attack
   mHurtParam: Damage
@@ -263,7 +266,7 @@ MonoBehaviour:
     SynchronizeType: 2
     Name: Attack
   - Type: 4
-    SynchronizeType: 0
+    SynchronizeType: 2
     Name: Dead
   m_SynchronizeLayers:
   - SynchronizeType: 0

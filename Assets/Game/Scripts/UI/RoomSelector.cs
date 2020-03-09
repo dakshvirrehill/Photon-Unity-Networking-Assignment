@@ -46,20 +46,35 @@ public class RoomSelector : MonoBehaviour, IInitable
             return;
         }
         mRoomBtn.interactable = false;
-        mSelected = !mSelected;
-        mSelectedImage.SetActive(mSelected);
         if(mLobbyUI.mSelectedRoom != null)
         {
+            bool aReturn = mLobbyUI.mSelectedRoom.gameObject.GetInstanceID() == gameObject.GetInstanceID();
             mLobbyUI.mSelectedRoom.UnSelectRoom();
+            if(aReturn)
+            {
+                mRoomBtn.interactable = true;
+                return;
+            }
         }
-        mLobbyUI.mSelectedRoom = this;
-        mLobbyUI.mLobbyNameImpField.SetTextWithoutNotify(mRoomName.text);
+        mSelected = !mSelected;
+        mSelectedImage.SetActive(mSelected);
+        if (mSelected)
+        {
+            mLobbyUI.mSelectedRoom = this;
+            mLobbyUI.mLobbyNameImpField.text = mRoomName.text;
+        }
         mRoomBtn.interactable = true;
     }
     public void UnSelectRoom()
     {
+        if(!mSelected)
+        {
+            return;
+        }
         mSelected = false;
+        mLobbyUI.mSelectedRoom = null;
         mSelectedImage.SetActive(false);
+        mLobbyUI.mLobbyNameImpField.text = "";
     }
 
     public void SetRoomName(string pName)

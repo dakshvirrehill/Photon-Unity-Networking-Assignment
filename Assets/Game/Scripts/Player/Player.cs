@@ -12,18 +12,20 @@ public class Player : MonoBehaviourPun, IPunObservable
 
     public float mHealth = 10;
     public float mHitDamage = 1;
+    [HideInInspector] public bool mInAttack = false;
+    [HideInInspector] public Vector2 mDodgeDirection = Vector2.zero;
     bool mAttacking = false;
     bool mAttacked = false;
     public float mAttackTimer = 0.2f;
     float mCurAttackTimer = 0.0f;
-    HUD mCurrHUD = null;
+    [HideInInspector] public HUD mCurrHUD = null;
     void Start()
     {
         mCurrHUD = MenuManager.Instance.GetMenu<HUD>(GameManager.Instance.mHUD);
         if (PhotonNetwork.IsMasterClient)
         {
             mRenderer.color = photonView.IsMine ? Color.yellow : Color.green;
-            if(photonView.IsMine)
+            if (photonView.IsMine)
             {
                 mCurrHUD.PlayerOneInit(photonView.Owner.NickName);
             }
@@ -44,19 +46,23 @@ public class Player : MonoBehaviourPun, IPunObservable
                 mCurrHUD.PlayerOneInit(photonView.Owner.NickName);
             }
         }
-        mMovement.mActive = photonView.IsMine;
+        if(!photonView.IsMine)
+        {
+            MenuManager.Instance.HideMenu(GameManager.Instance.mNetworkwaitMenu);
+            MenuManager.Instance.ShowMenu(GameManager.Instance.mHUD);
+        }
     }
 
     void Update()
     {
-        if(!photonView.IsMine)
+        if (!photonView.IsMine)
         {
             return;
         }
         if (mAttacking)
         {
             mCurAttackTimer += Time.deltaTime;
-            if(mCurAttackTimer > mAttackTimer)
+            if (mCurAttackTimer > mAttackTimer)
             {
                 CreateAttack();
                 mAttacking = false;
@@ -75,7 +81,7 @@ public class Player : MonoBehaviourPun, IPunObservable
     {
         stream.Serialize(ref mAttacking);
         stream.Serialize(ref mHealth);
-        if(stream.IsReading)
+        if (stream.IsReading)
         {
             UpdateHealth();
         }
@@ -83,13 +89,13 @@ public class Player : MonoBehaviourPun, IPunObservable
 
     void UpdateHealth()
     {
-        if(mCurrHUD == null)
+        if (mCurrHUD == null)
         {
             mCurrHUD = MenuManager.Instance.GetMenu<HUD>(GameManager.Instance.mHUD);
         }
         if (PhotonNetwork.IsMasterClient)
         {
-            if(photonView.IsMine)
+            if (photonView.IsMine)
             {
                 mCurrHUD.UpdatePlayerOneHealth(mHealth / 10.0f);
             }
@@ -117,13 +123,23 @@ public class Player : MonoBehaviourPun, IPunObservable
         {
             return;
         }
-        if (!mAttacking || mAttacked)
-        {
-            return;
-        }
         Player aPlayer = collision.collider.GetComponent<Player>();
         if (aPlayer != null)
         {
+            mInAttack = true;
+            mDodgeDirection = transform.position - aPlayer.transform.position;
+            if(mDodgeDirection.x < 0)
+            {
+                mDodgeDirection.x = -0.5f;
+            }
+            else if(mDodgeDirection.x > 0)
+            {
+                mDodgeDirection.x = 0.5f;
+            }
+            if (!mAttacking || mAttacked)
+            {
+                return;
+            }
             aPlayer.photonView.RPC("CauseDamage", RpcTarget.All,
                     GameSceneHandler.Instance.mPlayerId);
             mAttacked = true;
@@ -142,13 +158,22 @@ public class Player : MonoBehaviourPun, IPunObservable
 
     void OnCollisionExit2D(Collision2D collision)
     {
-        CheckForAttack(collision);
+        if (!photonView.IsMine)
+        {
+            return;
+        }
+        Player aPlayer = collision.collider.GetComponent<Player>();
+        if (aPlayer != null)
+        {
+            mInAttack = false;
+            mDodgeDirection = Vector2.zero;
+        }
     }
 
     [PunRPC]
     public void CauseDamage(int pOpponentId)
     {
-        if(!photonView.IsMine)
+        if (!photonView.IsMine)
         {
             return;
         }
@@ -156,14 +181,14 @@ public class Player : MonoBehaviourPun, IPunObservable
         {
             return;
         }
-        if(mHealth <= 0)
+        if (mHealth <= 0)
         {
             return;
         }
         mHealth -= mHitDamage;
         UpdateHealth();
         mMovement.HurtPlayer();
-        if(mHealth <= 0)
+        if (mHealth <= 0)
         {
             mMovement.KillPlayer();
             photonView.RPC("DisplayGameEnd",
@@ -175,13 +200,12 @@ public class Player : MonoBehaviourPun, IPunObservable
     [PunRPC]
     public void DisplayGameEnd(bool pWon)
     {
-        mMovement.mActive = false;
-        mRigidbody.velocity = Vector2.zero;
-        mAnimator.SetFloat(mMovement.mHorizontalParam, 0);
+        GameSceneHandler.Instance.mLocalPlayer.mMovement.mActive = false;
+        GameSceneHandler.Instance.mLocalPlayer.mRigidbody.velocity = Vector2.zero;
+        GameSceneHandler.Instance.mLocalPlayer.mAnimator.SetFloat(mMovement.mHorizontalParam, 0);
         MenuManager.Instance.ShowMenu(GameManager.Instance.mGameOverMenu);
         GameOverMenu aGameOverMenu = MenuManager.Instance.GetMenu<GameOverMenu>(GameManager.Instance.mGameOverMenu);
         aGameOverMenu.SetWinLoss(pWon);
-        photonView.Synchronization = ViewSynchronization.Off;
     }
 
 }

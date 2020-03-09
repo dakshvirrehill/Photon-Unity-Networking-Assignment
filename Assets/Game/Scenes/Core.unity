@@ -226,7 +226,29 @@ MonoBehaviour:
       type: 2}
     mName: UI
     mExposedVolVariableName: UIVol
-  mAudioData: []
+  mAudioData:
+  - mAudioClip: {fileID: 8300000, guid: a190b9c4b25d22342858bdbffd459458, type: 3}
+    mAudioGroup: Music
+  - mAudioClip: {fileID: 8300000, guid: 71616396ef9f9984f8e8b3f797c8180d, type: 3}
+    mAudioGroup: Music
+  - mAudioClip: {fileID: 8300000, guid: e6069fd8ea248ec478011fd59ac82de5, type: 3}
+    mAudioGroup: Music
+  - mAudioClip: {fileID: 8300000, guid: 95069d4c3379dd841ab073d0fc5e9f2f, type: 3}
+    mAudioGroup: Music
+  - mAudioClip: {fileID: 8300000, guid: 9a6de07dcd82098438b2b774c37fcaaa, type: 3}
+    mAudioGroup: UI
+  - mAudioClip: {fileID: 8300000, guid: 75fa6b5fedb6d514aaed87a4b3f4f53b, type: 3}
+    mAudioGroup: UI
+  - mAudioClip: {fileID: 8300000, guid: fa719fe09f63d1943b8ccc6f821d0437, type: 3}
+    mAudioGroup: UI
+  - mAudioClip: {fileID: 8300000, guid: 5daee0807a0404e4aa53e3a5158324ed, type: 3}
+    mAudioGroup: Sfx
+  - mAudioClip: {fileID: 8300000, guid: be1f80b655485c649a4aa8cf7cfcff07, type: 3}
+    mAudioGroup: Sfx
+  - mAudioClip: {fileID: 8300000, guid: 5918ec52815ca8c4db1331af9d6d0de6, type: 3}
+    mAudioGroup: Sfx
+  - mAudioClip: {fileID: 8300000, guid: 094140cb9780d6d4e861b3d886fe1ca5, type: 3}
+    mAudioGroup: Sfx
 --- !u!1 &324254571
 GameObject:
   m_ObjectHideFlags: 0
@@ -413,7 +435,7 @@ MonoBehaviour:
   mLobby: {fileID: 11400000, guid: dd7dbc3ab751970419ae8edc9333fc11, type: 2}
   mHUD: {fileID: 11400000, guid: 81c698ae3d81ae74cad94e91ec2be560, type: 2}
   mNetworkwaitMenu: {fileID: 11400000, guid: 565097ac3d145084e9b4a0e2c7defd61, type: 2}
-  mGameOverMenu: {fileID: 0}
+  mGameOverMenu: {fileID: 11400000, guid: 0b1703736df4bdc4baedab7d81d1e505, type: 2}
   mUIScene:
     sceneAsset: {fileID: 102900000, guid: c2718da20bb9dea43bc67bea6563ee1b, type: 3}
     scenePath: Assets/Game/Scenes/UI.unity

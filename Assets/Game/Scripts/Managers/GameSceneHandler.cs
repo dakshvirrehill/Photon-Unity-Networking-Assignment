@@ -13,6 +13,9 @@ public class GameSceneHandler : Singleton<GameSceneHandler>
     [SerializeField] string mPlayerPrefab = "Player";
     [HideInInspector] public bool mGameStarted = false;
     [HideInInspector] public int mPlayerId;
+    [HideInInspector] public Player mLocalPlayer;
+    [SerializeField] string mDelayTimer = "StartTimer";
+    [HideInInspector] public DelayTimer mTimer = null;
     void Start()
     {
         int aMasterId = PhotonNetwork.CurrentRoom.MasterClientId;
@@ -40,13 +43,29 @@ public class GameSceneHandler : Singleton<GameSceneHandler>
                 null,
                 new RaiseEventOptions { Receivers = ReceiverGroup.MasterClient },
                 new SendOptions { Reliability = true });
-           
         }
     }
 
     void OnDestroy()
     {
         PhotonNetwork.NetworkingClient.EventReceived -= OnEvent;
+    }
+
+    void Update()
+    {
+        if(!mGameStarted)
+        {
+            if(mTimer == null)
+            {
+                return;
+            }
+            mLocalPlayer.mCurrHUD.SetTimer((int)mTimer.mTimer);
+            if(mTimer.mTimer <= 0)
+            {
+                mGameStarted = true;
+                mLocalPlayer.mMovement.mActive = true;
+            }
+        }
     }
 
 
@@ -72,7 +91,6 @@ public class GameSceneHandler : Singleton<GameSceneHandler>
 
     void StartGameScene()
     {
-        mGameStarted = true;
         GameObject aPlayer = null;
         if (PhotonNetwork.IsMasterClient)
         {
@@ -80,6 +98,11 @@ public class GameSceneHandler : Singleton<GameSceneHandler>
                 mPlayerPrefab, 
                 mPlayerOneSpawnPosition.position, 
                 mPlayerOneSpawnPosition.rotation);
+            GameObject aTimer = PhotonNetwork.Instantiate(
+                mDelayTimer,
+                Vector3.zero,
+                Quaternion.identity
+                );
         }
         else
         {
@@ -88,8 +111,7 @@ public class GameSceneHandler : Singleton<GameSceneHandler>
                 mPlayerTwoSpawnPosition.position,
                 mPlayerTwoSpawnPosition.rotation);
         }
-        MenuManager.Instance.HideMenu(GameManager.Instance.mNetworkwaitMenu);
-        MenuManager.Instance.ShowMenu(GameManager.Instance.mHUD);
+        mLocalPlayer = aPlayer.GetComponent<Player>();
     }
 
 
