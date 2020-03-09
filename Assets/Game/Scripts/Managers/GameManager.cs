@@ -31,6 +31,7 @@ public class GameManager : Singleton<GameManager>
     void Start()
     {
         mNetworkCallbacks.mConnectedToMaster.AddListener(OnConnectedToMaster);
+        MultiSceneManager.Instance.LoadScene(mUIScene);
     }
 
     void OnDestroy()
@@ -76,7 +77,7 @@ public class GameManager : Singleton<GameManager>
 
     public void StartGame()
     {
-
+        MultiSceneManager.Instance.LoadScene(mGameScene);
     }
 
 
